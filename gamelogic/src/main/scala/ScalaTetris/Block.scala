@@ -66,7 +66,7 @@ class Tetrion(val Control: Controller, val battleController: BattleController) e
     }
   }
 
-
+ 
   /** Sets a new piece on the playfield. Takes into account initial rotation.
       @return false if the piece could not be placed. */
   def setNewPiece(IRS: Rotation.Value): Boolean = {
