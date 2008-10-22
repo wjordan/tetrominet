@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>ScalaTetris</groupId>
+    <artifactId>gamelogic</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <parent>
+        <groupId>pulpcore</groupId>
+        <artifactId>template</artifactId>
+        <version>0.11.3-SNAPSHOT</version>
+    </parent>
+
+    <name>Game Logic</name>
+    <description>Contains the game logic and PulpCore applet.</description>
+    <developers>
+        <developer>
+            <name>Will Jordan</name>
+            <id>will</id>
+            <organization>http://www.sfcave.com</organization>
+        </developer>
+    </developers>
+    <properties>
+        <project.scene>HelloWorld.HelloWorld</project.scene>
+        <project.width>640</project.width>
+        <project.height>600</project.height>
+        <project.params></project.params>
+        <project.codebase></project.codebase>
+        <scala.version>2.7.1</scala.version>
+    </properties>
+    <repositories>
+        <repository>
+            <id>Gamefight.org</id>
+            <url>http://gamefight.org/maven</url>
+        </repository>
+        <repository>
+            <id>scala-tools.org</id>
+            <name>Scala-Tools Maven2 Repository</name>
+            <url>http://scala-tools.org/repo-releases</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>Gamefight.org</id>
+            <url>http://gamefight.org/maven</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>scala-tools.org</id>
+            <name>Scala-Tools Maven2 Repository</name>
+            <url>http://scala-tools.org/repo-releases</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <dependencies>
+        <dependency>
+          <groupId>org.scala-lang</groupId>
+          <artifactId>scala-library</artifactId>
+          <version>${scala.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.scala-lang</groupId>
+          <artifactId>scala-compiler</artifactId>
+          <version>${scala.version}</version>
+          <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.scala-tools</groupId>
+                <artifactId>maven-scala-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <scalaVersion>${scala.version}</scalaVersion>
+                </configuration>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-eclipse-plugin</artifactId>
+              <configuration>
+                <downloadSources>true</downloadSources>
+                <excludes>
+                  <exclude>org.scala-lang:scala-library</exclude>
+                </excludes>
+                <classpathContainers>
+                  <classpathContainer>ch.epfl.lamp.sdt.launching.SCALA_CONTAINER</classpathContainer>
+                </classpathContainers>
+                <projectnatures>
+                  <java.lang.String>ch.epfl.lamp.sdt.core.scalanature</java.lang.String>
+                  <java.lang.String>org.eclipse.jdt.core.javanature</java.lang.String>
+                </projectnatures>
+                <buildcommands>
+                  <java.lang.String>ch.epfl.lamp.sdt.core.scalabuilder</java.lang.String>
+                </buildcommands>
+              </configuration>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-idea-plugin</artifactId>
+              <configuration>
+                <downloadSources>true</downloadSources>
+                <downloadJavadocs>true</downloadJavadocs>
+              </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <reporting>
+      <plugins>
+        <plugin>
+          <groupId>org.scala-tools</groupId>
+          <artifactId>maven-scala-plugin</artifactId>
+          <configuration>
+            <scalaVersion>${scala.version}</scalaVersion>
+          </configuration>
+        </plugin>
+      </plugins>
+    </reporting>
+</project>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module relativePaths="false" MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="Scala" name="Scala">
+      <configuration />
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_5" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/target/classes" />
+    <output-test url="file://$MODULE_DIR$/target/test-classes" />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/scala" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+    </content>
+    <orderEntry type="library" name="scala-2.7.1.final" level="application" />
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar:///home/will/.m2/repository/pulpcore/applet/debug/0.11.3-SNAPSHOT/debug-0.11.3-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file:///home/will/Documents/pulpcore/src" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar:///home/will/.m2/repository/org/scala-lang/scala-compiler/2.7.1/scala-compiler-2.7.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar:///home/will/.m2/repository/org/scala-lang/scala-compiler/2.7.1/scala-compiler-2.7.1-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar:///home/will/.m2/repository/org/scala-lang/scala-library/2.7.1/scala-library-2.7.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar:///home/will/.m2/repository/org/scala-lang/scala-library/2.7.1/scala-library-2.7.1-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar:///home/will/.m2/repository/pulpcore/assettools/0.11.3-SNAPSHOT/assettools-0.11.3-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" exported="" name="Maven: pulpcore.applet:debug:0.11.3-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="Maven: pulpcore:assettools:0.11.3-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.scala-lang:scala-library:2.7.1" level="project" />
+    <orderEntry type="library" name="Maven: org.scala-lang:scala-compiler:2.7.1" level="project" />
+  </component>
+</module>
+
