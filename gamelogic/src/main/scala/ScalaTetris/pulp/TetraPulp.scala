@@ -193,7 +193,7 @@ class PulpCellView(c : Cell, tv : PulpTetrionView) extends Group with CellView {
 
 /** Simple block visualization using a Pulpcore FilledSprite. */
 class PulpBlockView (b : Block) extends FilledSprite(Colors.WHITE) with BlockView {
-//  this.pixelSnapping.set(true)
+  this.pixelSnapping.set(true)
   val block: Block = b
   var active : Boolean = false
   setAnchor(Sprite.CENTER)

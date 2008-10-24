@@ -15,19 +15,18 @@ import ScalaTetris.net._
 object Option extends Enumeration("End","None","AddLine") { val End, None, AddLine, Empty = Value }
 
 /** A set of the different input state enumerations, with a binary encoding. */
-case class State (movement: Movement.Value, drop: Drop.Value, rotation: Rotation.Value, IRS: Rotation.Value, option: Option.Value) {
+case class State (movement: Movement.Value, drop: Drop.Value, rotation: Rotation.Value, option: Option.Value) {
   def this(int: Int) = this(
     Movement.apply(int & 0x3),
     Drop.apply((int >> 2) & 0x3),
     Rotation.apply((int >> 4) & 0x3),
-    Rotation.apply((int >> 6) & 0x3),
-    Option.apply((int >> 8) & 0x7))
-  def toInt: Int = (movement.id) + (drop.id << 2) + (rotation.id << 4) + (IRS.id << 6) + (option.id << 8)
+    Option.apply((int >> 6) & 0x7))
+  def toInt: Int = (movement.id) + (drop.id << 2) + (rotation.id << 4) + (option.id << 6)
 }
 
-object EndState extends State(Movement.None,Drop.None,Rotation.None,Rotation.None,Option.End)
-object EmptyState extends State(Movement.None,Drop.None,Rotation.None,Rotation.None,Option.Empty)
-object NoneState extends State(Movement.None,Drop.None,Rotation.None,Rotation.None,Option.None)
+object EndState extends State(Movement.None,Drop.None,Rotation.None,Option.End)
+object EmptyState extends State(Movement.None,Drop.None,Rotation.None,Option.Empty)
+object NoneState extends State(Movement.None,Drop.None,Rotation.None,Option.None)
 
 object EmptyController extends Controller{ val seed = 0L; def pollState = EmptyState }
 
@@ -41,7 +40,7 @@ case class StateSeq(state : State, length : Int) {
 }
 
 object StateSeq {
-  /** Packs a sequence of States into a StateSeq array using simple run-length encoding. */
+  /** Packs a sequence of States into an array using run-length encoding. */
   implicit def toStateSeq(seq : Seq[State]) : Seq[StateSeq] = {
     if(seq.length == 0) return Seq.empty
 
@@ -56,19 +55,9 @@ object StateSeq {
   }
 }
 
-object Controller extends Enumeration{ val history, poll, xml = Value }
 trait Controller {
   import StateSeq._
   
-/*
-  def act() = loop { react {
-//    case Controller.history => reply(history)
-//    case Controller.poll => reply(poll)
-//    case Controller.xml => reply(toXmlIter)
-  }}
-  start
-*/
-
   /** Holds the fixed random-number seed to be used in the game's execution. */
   val seed : Long
   /** Returns the current set of input states. */

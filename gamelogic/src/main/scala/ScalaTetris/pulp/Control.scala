@@ -29,7 +29,7 @@ class PulpControl(player : Player.Value, val seed: Long) extends Controller {
     (KEY_NUMPAD4, KEY_NUMPAD6, KEY_NUMPAD7, KEY_NUMPAD9, KEY_NUMPAD2, KEY_NUMPAD5, KEY_NUMPAD8, KEY_F1,
             KEY_NUMPAD4, KEY_NUMPAD6,KEY_NUMPAD5, KEY_NUMPAD8,KEY_INSERT,KEY_HOME))
 
-  def pollState = State(_movement,_drop,_rotation,_IRS,_option)
+  def pollState = State(_movement,_drop,_rotation,_option)
 
   private def _option = {
     if (isDown(keyQuit)) End
@@ -48,12 +48,6 @@ class PulpControl(player : Player.Value, val seed: Long) extends Controller {
     else Drop.None
   }
   private def _rotation = {
-    if (isPressed(keyRotateCCW) || isPressed(keyRotateCCW2)) RotCCW
-    else if (isPressed(keyRotateCW)|| isPressed(keyRotateCW2)) RotCW
-    else if (isPressed(keyRotate180)) Rot180
-    else Rotation.None
-  }
-  private def _IRS = {
     if (isDown(keyRotateCCW)|| isDown(keyRotateCCW2)) RotCCW
     else if (isDown(keyRotateCW)|| isDown(keyRotateCW2)) RotCW
     else if (isDown(keyRotate180)) Rot180

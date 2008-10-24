@@ -16,18 +16,13 @@ import scala.collection.mutable
 import java.net._;
 
 
-/**
- * Multi-player Client that communicates with a server through an HTTPConnection.
-*/
-
 case class SendController(control: Controller)
 
 case class SendBattleEffect(effect: BattleEffect, control: Controller)
 
-object Client {
-  val server: String = "http://ec2-75-101-224-153.compute-1.amazonaws.com:8080"
-}
-
+/**
+ * Contains the Actors that communicate with the server-side components through HTTP.
+ */
 class Client {
 
   /** Schedules controller updates to fire at fixed intervals. */
@@ -36,7 +31,7 @@ class Client {
     Thread.sleep(1000)
   }}
 
-  /** Fires player controller updates to the server and adds the reply sequence to the local opponent playback. */
+  /** Fires player controller updates to the server and adds the reply sequence to the local opponent's playback. */
   val UploadActor = actor{loop{react{
     case SendController(control) =>
       if(control.length - control.lastFrameDump > 0) {
@@ -78,9 +73,9 @@ class Client {
       if (c != null && c.size > 0) {
         val s = c.get(0)
         val jsession = s.substring(s.indexOf("="),s.indexOf(";"))
-        println("Setting " + jsession + "!")
         sessionId = ";jsessionid"+jsession
       }
+
       val xmlElem = scala.xml.XML.loadString(u.getResponse)
       xmlElem.label match {
         case "TIMEOUT" =>
@@ -103,35 +98,51 @@ class Client {
 
 }
 
-/** The Tetrion uses this interface to communicate messages that affect a multiplayer Battle. */
+/**
+ * A Battle is a live game session, consisting of a gameplay mode and one or more Tetrion.
+ * In a multiplayer Battle, this is the interface where in-game effects and messages are passed
+ * between players.
+ */
 trait BattleController {
-  var player: Tetrion
-  var opponent: Tetrion
-  var time: Int
 
-  /** Passes BattleEffect messages back and forth between player and opponent. */
+  /** The list of active Tetrion that comprise this Battle instance. */
+  var players: List[Tetrion]
+
+  /** The current frame number the overall Battle has advanced to.
+   * Note that in networked multiplayer Battles this time may only be synchronized to
+   * a single reference Tetrion. */
+  var time: Int = 0
+
+  /** Passes BattleEffect messages back and forth between player and opponent.
+   *  Note that this can be implemented either by an Actor or a normal method. */
   def !(msg:Any)
+
+  def update: Unit = { time += 1; players.map(_.update) }
 }
 
-/** Instantiate a local battle. Both player and opopnent Tetrion use the same Randomizer seed. */
+/**
+ * Instantiate a Battle with one Tetrion controlled by local input and the other
+ * controlled by a playback session.
+ * Both player and opopnent Tetrion are initialized with the same Randomizer seed.
+ */
 class BattleLocal(seed: Long) extends BattleController {
   val latency = 1000
-  var time = 0
 
   // Hook the player Tetrion to the local PulpCore keyboard input.
   var input = new PulpControl(Player.Player1, seed)
   var player : Tetrion = new Tetrion(input,this)
 
-  // Hook the opponent Tetrion to the playback controller that will receive updates from the Client.
+  // Hook the opponent Tetrion to the playback controller receiving updates from the Client.
   var playback = new PlaybackController(seed,this)
   var opponent = new Tetrion(playback,this)
 
-  def update(elapsedTime: Int) = {
-    time += elapsedTime
-    player.update(elapsedTime)
+  var players = List(player, opponent)
+
+  override def update = {
+    time += 1
+    player.update
     if(time > latency*2) {
-//      XmlParse.addStates(playback, record.toXmlIter)
-      opponent.update(elapsedTime)
+      opponent.update
     }
   }
 
@@ -145,7 +156,7 @@ class BattleLocal(seed: Long) extends BattleController {
 
   /** Passes BattleEffect messages from opponent to the local player. */
   def !(msg: Any) = msg match {
-    // INFO: Using Actors for processing battle effects only and not for the main game loop due to performance hits.
+    // INFO: Using Actors for processing battle effects only and not for the main game loop for performance.
       case BattleMessage(effect: BattleEffect, tetrion: Tetrion) =>
         println("effect " + effect + " sent by " + tetrion + "!")
         if (tetrion == opponent) player ! BattleMessage(effect, tetrion)

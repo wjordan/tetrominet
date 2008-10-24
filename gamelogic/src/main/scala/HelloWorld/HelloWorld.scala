@@ -6,6 +6,8 @@ import pulpcore.image.Colors._
 import pulpcore.scene.Scene2D
 import pulpcore.sprite._
 import ScalaTetris._
+
+import ScalaTetris.local.SinglePlayerGame
 import ScalaTetris.net
 import ScalaTetris.net._
 import ScalaTetris.pulp._
@@ -13,7 +15,6 @@ import pulpcore.Input
 import pulpcore.Stage
 import scala.io.Source
 import scala.xml._
-import ScalaTetris.server.HighScoreChecker
 
 class HelloWorld extends Scene2D {
   var client: Client = null
@@ -22,6 +23,9 @@ class HelloWorld extends Scene2D {
     Stage.setFrameRate(20);
     add(new FilledSprite(WHITE))
     add(new Label("Waiting for opponent...",50,100))
+    add(new Label("WASD keys to move, [] keys to rotate",50,130))
+    add(new Label("Or arrow keys to move, ZX keys to rotate",50,160))
+    add(new Label("Press ENTER to begin a single-player game!",50,1200))
 
     client = new Client
   }
@@ -35,8 +39,32 @@ class HelloWorld extends Scene2D {
     if(Input.isPressed(Input.KEY_R)) {
       Stage.replaceScene(new HelloWorld)
     }
+    if(Input.isPressed(Input.KEY_ENTER)) {
+      Stage.replaceScene(new SoloTetrisScene(new SinglePlayerGame(0)))
+    }
   }
   
+}
+
+class SoloTetrisScene(battle: BattleController) extends Scene2D {
+  var pulpview1: PulpTetrionView = null
+
+  override def load = {
+    add(new FilledSprite(WHITE))
+    pulpview1 = new PulpTetrionView(battle.players(0), 20)
+    pulpview1.setLocation(50,20)
+    add(pulpview1)
+  }
+
+  var paused = false
+
+  override def update(elapsedTime:Int) = {
+    if(Input.isPressed(Input.KEY_P)) paused = !paused
+    if(Input.isPressed(Input.KEY_R)) {
+      Stage.replaceScene(new HelloWorld)
+    }
+    battle.update
+  }
 }
 
 class TetrisScene(battle: BattleLocal) extends Scene2D {
@@ -65,7 +93,7 @@ class TetrisScene(battle: BattleLocal) extends Scene2D {
       Stage.replaceScene(new HelloWorld)
     }
 
-    battle.update(elapsedTime)
+    battle.update
   }
 
 }

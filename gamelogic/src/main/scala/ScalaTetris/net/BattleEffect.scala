@@ -1,4 +1,5 @@
 package ScalaTetris.net
+
 import scala.xml._
 
 /**
@@ -7,14 +8,14 @@ import scala.xml._
  */
 
 trait BattleEffect {
-  /** Reference to the Tetrion this effect will affect. */
+  /** Reference to the Tetrion the effect controls. */
   var tetrion: Tetrion = null
   /** Length in frames that this effect lasts. This is the number of times the run method will be called. */
   val duration: Int
 
   var frame: Int = 0
 
-  /** Perform the battle effect. */
+  /** Executes the battle effect. */
   def run = {
     frame += 1
     if(frame >= duration) { exit; tetrion.battleEffects -= this }
@@ -26,7 +27,7 @@ trait BattleEffect {
 
   /** Called when the effect begins. */
   protected def enter: Unit = {
-    tetrion.set(GameState.Paused)
+    tetrion.set(tetrion.Paused)
   }
 
   def set(t: Tetrion): Int = { println(t+":BATTLE EFFECT set!")
@@ -34,7 +35,7 @@ trait BattleEffect {
 
   /** Called when the effect finishes. */
   protected def exit: Unit = {
-    tetrion.set(GameState.Are)
+    tetrion.set(tetrion.Are)
   }
 
   def toXml: NodeSeq = effectXml
