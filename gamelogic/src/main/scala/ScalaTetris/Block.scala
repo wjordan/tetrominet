@@ -1,6 +1,7 @@
 package ScalaTetris
 
 
+import mode.{PlayMode, TADeath, EasyMode}
 import model.TetrionState
 import net.{BattleEffect, BattleController, AddLinesEffect}
 import pulp.PulpControl
@@ -19,16 +20,9 @@ abstract class TetrionBase (seed:Long) extends TetrionModel {
   var pieceQueue : PieceQueue = new PieceQueue(Randomizer.Memoryless,seed)
 
 /** Constants */
-  /** Gravity expressed in number of rows descended per frame (TGM works in fractions of 256 so we'll follow that convention) */
-  var gravity: Double = (8.0 / 256)
   /** Initial Starting position of new Pieces */
   val defaultPos = Pos(3, 3)
-  /** Lock Delay is the max amount of time a piece can touch the ground before locking */
-  val maxLockDelay = 30
-  val are = 16
-  val lineClearDelay = 12
 
-  var score = 0
 
   var piece : Piece = EmptyPiece
   var piecePos : Pos = defaultPos
@@ -52,7 +46,6 @@ abstract class TetrionBase (seed:Long) extends TetrionModel {
   /** Locks the current piece to the playfield. */
   def lockPiece = {
     lockCounter = 0
-    score += 1
     piece.lock
     notifyView(_.pieceLock(piece))
   }
@@ -149,6 +142,8 @@ abstract class TetrionBase (seed:Long) extends TetrionModel {
   /** Maps the current Cell positions of all active Blocks. */
   val blockMap = mutable.Map.empty[Block,Cell]
 
+  val width = 10
+  val height = 24
   /** The collection of all static cells that comprise the playing field. */
   type Array2D[A] = Array[Array[A]]
   val playField: Array2D[Cell] = Array.fromFunction((x, y) => {
@@ -156,9 +151,9 @@ abstract class TetrionBase (seed:Long) extends TetrionModel {
     if(y < 4) cell.isHidden = true
     notifyView(_.notifyCellCreate(cell))
     cell
-  })(10, 24)
+  })(width, height)
   def getRow(row:Int): Array[Cell] = Array.fromFunction(playField(_)(row))(playField.length)
-  def bottomRow = getRow(23)
+  def bottomRow = getRow(height-1)
 
   def model = playField
 
@@ -179,6 +174,8 @@ abstract class TetrionBase (seed:Long) extends TetrionModel {
 class Tetrion(val Control: Controller, val battleController: BattleController) extends TetrionBase(Control.seed)
         with TetrionState {
   override def toString = frame.toString /*(if (this == battleController.player) "PlayerTetrion" else "OpponentTetrion") + ":#"+*/
+
+  val playmode: PlayMode = new TADeath(this)
   
   val battleQueue = new SynchronizedQueue[BattleEffect];
   val messageQueue = new SynchronizedQueue[Any];
@@ -220,7 +217,7 @@ class Tetrion(val Control: Controller, val battleController: BattleController) e
   def cantMoveDown: Boolean = (movePos(Pos(0, 1)) == piecePos)
   def pieceLocked(): Boolean = {
     if (cantMoveDown) lockCounter += 1
-    (lockCounter >= maxLockDelay)
+    (lockCounter >= playmode.maxLockDelay)
   }
 
   /** Handle vertical movement and piece locking. */
@@ -232,7 +229,7 @@ class Tetrion(val Control: Controller, val battleController: BattleController) e
       case Drop.None => 0
     }
     // Make the piece fall extra from gravity
-    gravityCounter += gravity
+    gravityCounter += playmode.gravity
     if(gravityCounter > 1) {
       val gcRound = gravityCounter.toInt
       gravityCounter -= gcRound
@@ -253,6 +250,7 @@ class Tetrion(val Control: Controller, val battleController: BattleController) e
   def update = {
     checkMessages
     run((Control.poll).asInstanceOf[State])
+    playmode.update
   }
 }
 
@@ -330,6 +328,7 @@ object InvalidCell extends Cell {
   def put(b: Block) = false
   var isHidden = true
   var block = new Block(BlockType.Empty)
+  val emptyBlock = block
   def remove = {}
   def shiftUp(b: Block) = {}
   def shiftDown = block

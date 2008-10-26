@@ -18,6 +18,8 @@ import scala.xml._
 
 class HelloWorld extends Scene2D {
   var client: Client = null
+  lazy val normalButton = Button.createLabeledButton("Normal", 50, 200)
+  lazy val deathButton = Button.createLabeledButton("Death", 150, 200)
 
   override def load = {
     Stage.setFrameRate(20);
@@ -25,7 +27,8 @@ class HelloWorld extends Scene2D {
     add(new Label("Waiting for opponent...",50,100))
     add(new Label("WASD keys to move, [] keys to rotate",50,130))
     add(new Label("Or arrow keys to move, ZX keys to rotate",50,160))
-    add(new Label("Press ENTER to begin a single-player game!",50,1200))
+    add(normalButton)
+    add(deathButton)
 
     client = new Client
   }
@@ -39,7 +42,10 @@ class HelloWorld extends Scene2D {
     if(Input.isPressed(Input.KEY_R)) {
       Stage.replaceScene(new HelloWorld)
     }
-    if(Input.isPressed(Input.KEY_ENTER)) {
+    if(normalButton.isClicked) {
+      Stage.replaceScene(new SoloTetrisScene(new SinglePlayerGame(0)))
+    }
+    if(deathButton.isClicked) {
       Stage.replaceScene(new SoloTetrisScene(new SinglePlayerGame(0)))
     }
   }

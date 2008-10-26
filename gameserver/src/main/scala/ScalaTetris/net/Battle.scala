@@ -31,14 +31,14 @@ class Battle(val playerActor: GameActor, val opponentActor: GameActor) extends B
       XmlParse.addStates(controller, xml)
       // Cycle the Tetrion machine through all of the states just added
       do {
-        tetrion.update(20)
+        tetrion.update
       } while(controller.peekAhead != EmptyState)
     case GetOpponentStates(actor: GameActor) =>
 //      println("Battle: getting states for actor "+actor)
       val controller = if (actor == playerActor) opponentController else playerController
-      if(player.get == GameState.GameOver) {
+      if(player.get == player.GameOver) {
         reply(<Gameover youWin={(actor != playerActor).toString}/>)
-      } else if(opponent.get == GameState.GameOver) {
+      } else if(opponent.get == opponent.GameOver) {
         reply(<Gameover youWin={(actor != opponentActor).toString}/>)
       }
       reply(controller.toXmlIter)
@@ -60,6 +60,5 @@ class Battle(val playerActor: GameActor, val opponentActor: GameActor) extends B
   println("Starting battle!")
   start
 
-  var time: Int = 0
-
+  var players: List[Tetrion] = List(player,opponent)
 }

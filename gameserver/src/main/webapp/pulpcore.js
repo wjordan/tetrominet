@@ -1,3 +1,36 @@
+/*
+	Copyright (c) 2008, Interactive Pulp, LLC
+	All rights reserved.
+	
+	Redistribution and use in source and binary forms, with or without 
+	modification, are permitted provided that the following conditions are met:
+
+		* Redistributions of source code must retain the above copyright 
+		  notice, this list of conditions and the following disclaimer.
+		* Redistributions in binary form must reproduce the above copyright 
+		  notice, this list of conditions and the following disclaimer in the 
+		  documentation and/or other materials provided with the distribution.
+		* Neither the name of Interactive Pulp, LLC nor the names of its 
+		  contributors may be used to endorse or promote products derived from 
+		  this software without specific prior written permission.
+	
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+	POSSIBILITY OF SUCH DAMAGE.
+*/
+
+// PulpCore 0.11
+
+// Global functions accessed via LiveConnect
+
 function pulpcore_getCookie(name) {
 	name = name + "=";
 	
@@ -90,11 +123,31 @@ var pulpCoreObject = {
 	getJavaURL: "http://java.sun.com/webapps/getjava/BrowserRedirect?host=java.com" +
 		'&returnPage=' + document.location,
 		
+	// Special URL for Google Chrome (requires 6u10)
+	getJavaChromeURL: "http://java.sun.com/javase/downloads/ea.jsp",
+		
 	deploymentToolkitMimeType: 'application/npruntime-scriptable-plugin;DeploymentToolkit',
 		
 	// The Applet HTML (inserted after a delay)
 	appletHTML: "",
 	appletInserted: false,
+	
+	// Text defaults
+	
+	getRestartMessage: function() {
+		return window.pulpcore_text_restart ||
+			"Java installed! To play, you may need to restart your browser.";
+	},
+	
+	getInstallMessage: function() {
+		return window.pulpcore_text_install ||
+			"To play, install Java now.";
+	},
+	
+	getChromeInstallMessage: function() {
+		return window.pulpcore_text_install_chrome ||
+			"To play in Google Chrome, install Java 6 update 10.";
+	},
 	
 	// Gets the codebase from the document URL
 	getCodeBase: function() {
@@ -146,6 +199,10 @@ var pulpCoreObject = {
     },
 	
     isPlugin2: function() {
+		// Chrome can only run plugin2, but can't detect it?
+		if (pulpCoreObject.browserName == "Chrome") {
+			return true;
+		}
 		var deploymentToolkit = document.getElementById('deploymentToolkit');
         if (deploymentToolkit !== null) {
             try {
@@ -396,6 +453,7 @@ var pulpCoreObject = {
 	*/
 	isAcceptableJRE: function() {
 		var version;
+		var i;
 		
 		if (pulpCoreObject.browserName == "Explorer") {
 			// IE can install via the CAB
@@ -408,7 +466,7 @@ var pulpCoreObject = {
 		else if (pulpCoreObject.browserName == "Safari" && 
 			navigator.plugins && navigator.plugins.length) 
 		{
-			for (var i = 0; i < navigator.plugins.length; i++) {
+			for (i = 0; i < navigator.plugins.length; i++) {
 				var s = navigator.plugins[i].description;
 				// Based on code from the Deployment Toolkit
 				if (s.search(/^Java Switchable Plug-in/) != -1) {
@@ -433,6 +491,18 @@ var pulpCoreObject = {
 			}
 			version = pulpCoreObject.getHighestInstalledJavaViaMimeTypes();
 			return pulpCoreObject.isAcceptableJREVersion(version);
+		}
+		else if (pulpCoreObject.browserName == "Chrome") {
+			// Chrome requires 1.6.0_10 as the minimum. 
+			// So, if the mime type is available, return true.
+			if (navigator.mimeTypes && navigator.mimeTypes.length) {
+				for (i = 0; i < navigator.mimeTypes.length; i++) {
+					if (navigator.mimeTypes[i].type == "application/x-java-applet") {
+						return true;
+                    }
+                }
+			}
+			return false;
 		}
 		else {
 			// Couldn't detect - let the browser handle it
@@ -504,9 +574,16 @@ var pulpCoreObject = {
 		if (pulpCoreObject.shouldInstallXPI()) {
 			extraAttributes = ' onclick="pulpCoreObject.installXPI();return false;"';
 		}
-		return '<p id="pulpcore_install" style="text-align: center">To play, ' +
-			'<a href="' + pulpCoreObject.getJavaURL + '"' + extraAttributes + '>' +
-			'install Java now</a>.</p>\n';
+		if (pulpCoreObject.browserName == "Chrome") {
+			return '<p id="pulpcore_install" style="text-align: center">' +
+				'<a href="' + pulpCoreObject.getJavaChromeURL + '">' + 
+				pulpCoreObject.getChromeInstallMessage() + '</a></p>\n';
+		}
+		else {
+			return '<p id="pulpcore_install" style="text-align: center">' +
+				'<a href="' + pulpCoreObject.getJavaURL + '"' + extraAttributes + '>' + 
+				pulpCoreObject.getInstallMessage() + '</a></p>\n';
+		}
 	},
 	
 	shouldInstallXPI: function() {
@@ -535,7 +612,7 @@ var pulpCoreObject = {
 				// TODO: re-evaluate if JRE 1.5 is defined as the minimum. Does JRE 1.4 also
 				// "take over"?
 				var install = document.getElementById('pulpcore_install');
-				install.innerHTML = "Java installed! To play, you may need to restart your browser.";
+				install.innerHTML = pulpCoreObject.getRestartMessage();
 			}
 			else {
 				// If no Java previously installed, automagically start the game 
@@ -549,7 +626,7 @@ var pulpCoreObject = {
 	// Browser detection
 	// Based on a script from Peter-Paul Koch at QuirksMode:
 	// http://www.quirksmode.org/js/detect.html
-	// Up-to-date as of October 19, 2007
+	// Up-to-date as of September 7, 2008
 	
 	versionSearchString: "",
 	browserName: "",
@@ -614,6 +691,11 @@ var pulpCoreObject = {
 	},
 	
 	dataBrowser: [
+		{
+			string: navigator.userAgent,
+			subString: "Chrome",
+			identity: "Chrome"
+		},
 		{
 			string: navigator.userAgent,
 			subString: "OmniWeb",
@@ -691,4 +773,5 @@ var pulpCoreObject = {
 		}
 	]
 };
+
 pulpCoreObject.write();

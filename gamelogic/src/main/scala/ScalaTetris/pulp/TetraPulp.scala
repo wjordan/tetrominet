@@ -55,7 +55,7 @@ class PulpTetrionView (t : TetrionModel, blockSize : Int) extends Group with Tet
     view.active = false
   }
 
-  // Add all of the cells in the model
+  // Initialize view by adding all of the (empty) cells in the current model
   for(row <- tetrion.model; cell <- row)
     notifyCellCreate(cell)
 
@@ -118,8 +118,13 @@ class PulpTetrionView (t : TetrionModel, blockSize : Int) extends Group with Tet
 
   def scene: Scene2D = Stage.getScene.asInstanceOf[Scene2D]
 
+  val scoreLabel = new Label("Score: ",300,300)
+  add(scoreLabel)
+
+
   override def update(elapsedTime: Int): Unit = {
     super.update(elapsedTime)
+    scoreLabel.setText("Score: "+tetrion.playmode.score)
   }
 }
 
@@ -128,15 +133,12 @@ class PulpTetrionView (t : TetrionModel, blockSize : Int) extends Group with Tet
 class PulpCellView(c : Cell, tv : PulpTetrionView) extends Group with CellView {
   val cell = c
   var pos = cell.pos * tv.bSize
-  var blockView : PulpBlockView = null
+  var blockView : PulpBlockView = PulpBlockView.Empty
 
   // Listen to the Cell model
   c.register(this)
+  blockPut(c.emptyBlock)
   blockPut(c.block)
-
-  def blockRemove(b: Block) = {
-    tv.removeBlockView(b)
-  }
 
   def setBorders = {
     val map = Map.empty[Direction.Dir,Int]
@@ -164,7 +166,7 @@ class PulpCellView(c : Cell, tv : PulpTetrionView) extends Group with CellView {
     // Put this Block's sprite into this CellView.
     blockView = tv.getBlockView(b)
     blockView.setSize(tv.bSize)
-    val moveSpeed = Math.max(Math.min(100,(20.0/tv.tetrion.gravity)),20).toInt
+    val moveSpeed = 100
     blockView.setLocation(pos.x,pos.y)
 
     // Ensure the block spins in the nearest direction
@@ -172,6 +174,10 @@ class PulpCellView(c : Cell, tv : PulpTetrionView) extends Group with CellView {
     while(blockView.angle.get - rotation > Math.Pi) blockView.angle.set(blockView.angle.get - (Math.Pi*2))
     while(blockView.angle.get - rotation < -Math.Pi ) blockView.angle.set(blockView.angle.get + (Math.Pi*2))
     blockView.angle.set(rotation)
+  }
+
+  def blockRemove(b: Block) = {
+    tv.removeBlockView(b)
   }
 
   override def update(elapsedTime: Int) = {

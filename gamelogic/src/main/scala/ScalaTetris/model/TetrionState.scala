@@ -113,7 +113,7 @@ trait TetrionState {
         effect.set(TetrionState.this)
       }
       else if (lineAdd > 0) set(LineAdd)
-      else are
+      else playmode.are
     }
     override def exit = Spawn
   }
@@ -131,11 +131,14 @@ trait TetrionState {
 
   /** Extra delay is added whenever line(s) are cleared */
   object LineClear extends GState {
-    override def enter =
+    override def enter = {
+      playmode.pieceLock
       if (checkLineClears) {
         if (clearedBlocks.length >= 2) battleController ! (BattleMessage(new AddLinesEffect(clearedBlocks), TetrionState.this))
-        lineClearDelay
+        playmode.lineClear(clearedBlocks.length)
+        playmode.lineClearDelay
       } else set(Are)
+    }
     override def exit = {
       for (lineClear <- clearedLines) lineClear.map(_.shiftDown)
       notifyView(_.lineClearEnd)

@@ -16,7 +16,7 @@
     <name>ScalaTetris-Server</name>
     <inceptionYear>2008</inceptionYear>
     <properties>
-      <scala.version>2.7.1</scala.version>
+        <scala.version>2.7.1</scala.version>
     </properties>
 
     <dependencies>
@@ -27,136 +27,177 @@
         </dependency>
 
         <dependency>
-          <groupId>org.scala-lang</groupId>
-          <artifactId>scala-library</artifactId>
-          <version>${scala.version}</version>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${scala.version}</version>
         </dependency>
         <dependency>
-          <groupId>net.liftweb</groupId>
-          <artifactId>lift-webkit</artifactId>
-          <version>0.10-SNAPSHOT</version>
+            <groupId>net.liftweb</groupId>
+            <artifactId>lift-webkit</artifactId>
+            <version>0.10-SNAPSHOT</version>
         </dependency>
         <dependency>
-          <groupId>javax.servlet</groupId>
-          <artifactId>servlet-api</artifactId>
-          <version>2.5</version>
-          <scope>provided</scope>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-          <version>3.8.1</version>
-          <scope>test</scope>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
-          <groupId>org.mortbay.jetty</groupId>
-          <artifactId>jetty</artifactId>
-          <version>[6.1.6,)</version>
-          <scope>test</scope>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>jetty</artifactId>
+            <version>[6.1.6,)</version>
+            <scope>test</scope>
         </dependency>
         <!-- for LiftConsole -->
         <dependency>
-          <groupId>org.scala-lang</groupId>
-          <artifactId>scala-compiler</artifactId>
-          <version>${scala.version}</version>
-          <scope>test</scope>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-compiler</artifactId>
+            <version>${scala.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <repositories>
-      <repository>
-        <id>scala-tools.org</id>
-        <name>Scala-Tools Maven2 Repository</name>
-        <url>http://scala-tools.org/repo-snapshots</url>
-      </repository>
+        <repository>
+            <id>scala-tools.org</id>
+            <name>Scala-Tools Maven2 Repository</name>
+            <url>http://scala-tools.org/repo-snapshots</url>
+        </repository>
     </repositories>
 
     <pluginRepositories>
-      <pluginRepository>
-        <id>scala-tools.org</id>
-        <name>Scala-Tools Maven2 Repository</name>
-        <url>http://scala-tools.org/repo-snapshots</url>
-      </pluginRepository>
+        <pluginRepository>
+            <id>scala-tools.org</id>
+            <name>Scala-Tools Maven2 Repository</name>
+            <url>http://scala-tools.org/repo-snapshots</url>
+        </pluginRepository>
     </pluginRepositories>
 
     <build>
-      <plugins>
-        <plugin>
-          <groupId>org.scala-tools</groupId>
-          <artifactId>maven-scala-plugin</artifactId>
-          <executions>
-            <execution>
-              <goals>
-                <goal>compile</goal>
-                <goal>testCompile</goal>
-              </goals>
-            </execution>
-          </executions>
-          <configuration>
-            <scalaVersion>${scala.version}</scalaVersion>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.mortbay.jetty</groupId>
-          <artifactId>maven-jetty-plugin</artifactId>
-          <configuration>
-            <contextPath>/</contextPath>
-            <scanIntervalSeconds>0</scanIntervalSeconds>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>net.sf.alchim</groupId>
-          <artifactId>yuicompressor-maven-plugin</artifactId>
-          <executions>
-            <execution>
-              <goals>
-                <goal>compress</goal>
-              </goals>
-            </execution>
-          </executions>
-          <configuration>
-            <nosuffix>true</nosuffix>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-eclipse-plugin</artifactId>
-          <configuration>
-            <downloadSources>true</downloadSources>
-            <excludes>
-              <exclude>org.scala-lang:scala-library</exclude>
-            </excludes>
-            <classpathContainers>
-              <classpathContainer>ch.epfl.lamp.sdt.launching.SCALA_CONTAINER</classpathContainer>
-            </classpathContainers>
-            <projectnatures>
-              <java.lang.String>ch.epfl.lamp.sdt.core.scalanature</java.lang.String>
-              <java.lang.String>org.eclipse.jdt.core.javanature</java.lang.String>
-            </projectnatures>
-            <buildcommands>
-              <java.lang.String>ch.epfl.lamp.sdt.core.scalabuilder</java.lang.String>
-            </buildcommands>
-          </configuration>
-        </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-idea-plugin</artifactId>
-            <configuration>
-              <downloadSources>true</downloadSources>
-              <downloadJavadocs>true</downloadJavadocs>
-            </configuration>
-          </plugin>
-      </plugins>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>1.0-beta-4</version>
+            </extension>
+        </extensions>
+
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>wagon-maven-plugin</artifactId>
+                <version>1.0-SNAPSHOT</version>
+                <configuration>
+                    <url>scp://tetromi.net/home/web/tomcat/webapps</url>
+                    <serverId>tetromi.net</serverId>
+                    <skip>false</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>upload-war</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>upload-single</goal>
+                        </goals>
+                        <configuration>
+                            <fromFile>${project.build.directory}/${project.build.finalName}.war</fromFile>
+                            <toFile>tetrominet.war</toFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.scala-tools</groupId>
+                <artifactId>maven-scala-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <scalaVersion>${scala.version}</scalaVersion>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>maven-jetty-plugin</artifactId>
+                <configuration>
+                    <contextPath>/</contextPath>
+                    <scanIntervalSeconds>0</scanIntervalSeconds>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>net.sf.alchim</groupId>
+                <artifactId>yuicompressor-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compress</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <nosuffix>true</nosuffix>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <configuration>
+                    <downloadSources>true</downloadSources>
+                    <excludes>
+                        <exclude>org.scala-lang:scala-library</exclude>
+                    </excludes>
+                    <classpathContainers>
+                        <classpathContainer>ch.epfl.lamp.sdt.launching.SCALA_CONTAINER</classpathContainer>
+                    </classpathContainers>
+                    <projectnatures>
+                        <java.lang.String>ch.epfl.lamp.sdt.core.scalanature</java.lang.String>
+                        <java.lang.String>org.eclipse.jdt.core.javanature</java.lang.String>
+                    </projectnatures>
+                    <buildcommands>
+                        <java.lang.String>ch.epfl.lamp.sdt.core.scalabuilder</java.lang.String>
+                    </buildcommands>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-idea-plugin</artifactId>
+                <configuration>
+                    <downloadSources>true</downloadSources>
+                    <downloadJavadocs>true</downloadJavadocs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.myfaces.maven</groupId>
+                <artifactId>wagon-maven-plugin</artifactId>
+                <configuration>
+                    <id>upload-war</id>
+                    <url>scpexe://tetromi.net/home/will/</url>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
     <reporting>
-      <plugins>
-        <plugin>
-          <groupId>org.scala-tools</groupId>
-          <artifactId>maven-scala-plugin</artifactId>
-          <configuration>
-            <scalaVersion>${scala.version}</scalaVersion>
-          </configuration>
-        </plugin>
-      </plugins>
+        <plugins>
+            <plugin>
+                <groupId>org.scala-tools</groupId>
+                <artifactId>maven-scala-plugin</artifactId>
+                <configuration>
+                    <scalaVersion>${scala.version}</scalaVersion>
+                </configuration>
+            </plugin>
+        </plugins>
     </reporting>
 </project>
