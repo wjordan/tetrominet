@@ -1,0 +1,17 @@
+<assembly>
+  <id>standalone-jar</id>
+  <formats>
+    <format>jar</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <dependencySets>
+    <dependencySet>
+        <useTransitiveDependencies>false</useTransitiveDependencies>
+        <includes>
+            <include>ScalaTetris:gamelogic</include>
+            <include>pulpcore.applet:debug</include>
+        </includes>
+        <unpack>true</unpack>
+    </dependencySet>
+  </dependencySets>
+</assembly>

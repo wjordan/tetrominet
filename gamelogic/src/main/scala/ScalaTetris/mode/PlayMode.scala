@@ -72,7 +72,7 @@ class EasyMode(tetrion: Tetrion) extends PlayMode with TgmLevelAdvance {
 class TADeath(tetrion:Tetrion) extends PlayMode with TgmLevelAdvance {
   val curvePoints = Array(0,100,200,300,400,500)
   val areCurve = Array(18,14,14,8,7,6)
-  val areLineCurve = Array(12,16,6,6,5,4)
+  val areLineCurve = Array(12,6,6,6,5,4)
   val dasCurve = Array(12,12,11,10,8,8)
   val lockCurve = Array(30,26,22,18,15,15)
   val lineClearCurve = Array(12,6,6,6,5,4)

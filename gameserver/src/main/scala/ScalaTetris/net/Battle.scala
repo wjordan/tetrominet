@@ -60,5 +60,5 @@ class Battle(val playerActor: GameActor, val opponentActor: GameActor) extends B
   println("Starting battle!")
   start
 
-  var players: List[Tetrion] = List(player,opponent)
+  val players: List[Tetrion] = List(player,opponent)
 }

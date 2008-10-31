@@ -1,18 +1,13 @@
 package ScalaTetris.net
 
 
-import _root_.pulpcore.net.{Upload, Download}
-import HelloWorld.GameOverScene
+import scala.collection.{mutable, Map}
 import java.io.{ByteArrayInputStream, IOException}
 import java.util.Collections.UnmodifiableRandomAccessList
 import scala.xml.Elem
 import ScalaTetris._
-import pulp.{PulpControl, Player}
-import pulpcore.CoreSystem
-import pulpcore.Stage
 import scala.actors.Actor
 import scala.actors.Actor._
-import scala.collection.mutable
 import java.net._;
 
 
@@ -20,10 +15,29 @@ case class SendController(control: Controller)
 
 case class SendBattleEffect(effect: BattleEffect, control: Controller)
 
+/** Abstract data upload interface. */
+abstract class AbstractUpload(url: URL) {
+  def addField(field:String, value:String): Unit
+  def sendNow: Unit
+  def getResponse: String
+  def getCookie: Option[String]
+}
+
+trait ClientView {
+  def gameOver(iWin:Boolean): Unit
+  def gameStart(seed: Long): Unit
+  def upload(url:URL): AbstractUpload
+}
+
 /**
  * Contains the Actors that communicate with the server-side components through HTTP.
  */
-class Client {
+class Client(view: ClientView) {
+  
+  def startGame(b: BattleLocal) {
+    battle = b
+    TimerActor.start
+  }
 
   /** Schedules controller updates to fire at fixed intervals. */
   val TimerActor = new Actor { def act() = loop{
@@ -37,7 +51,7 @@ class Client {
       if(control.length - control.lastFrameDump > 0) {
         // Send the player's recorded controller to the server
         println("Sending state")
-        val u: Upload = new Upload(new URL(CoreSystem.getBaseURL,"/api/addStates" + sessionId))
+        val u: AbstractUpload = view.upload(new URL("/api/addStates" + sessionId))
         u.addField("seed", control.seed.toString)
         u.addField("xml", (control.toXmlIter).toString)
         u.sendNow
@@ -48,14 +62,13 @@ class Client {
           case "Controller" => XmlParse.addStates(battle.playback,xmlElem)
           case "Gameover" =>
             val iWin = (xmlElem \\ "@youWin").text
-            Stage.setScene(new GameOverScene("Game over! " + (if(iWin == "true")"You win!" else "You lose!")))
+            view.gameOver(iWin == "true")
             self.exit
         }
 
       }
   }}}
 
-  var started = false
   var battle: BattleLocal = null
 
   var sessionId = ""
@@ -63,17 +76,19 @@ class Client {
   /** Perform long polling on the server until a game connection is established. */
   val WaitForStartActor = actor { loop{
     println("Waiting for other player(s)...")
-    val url = new URL(CoreSystem.getBaseURL, "/api/waitForStart" + sessionId)
+    val url = new URL("/api/waitForStart" + sessionId)
     println("url="+url)
-    val u: Upload = new Upload(url)
+    val u: AbstractUpload = view.upload(url)
     try {
       u.sendNow
-      // Maunally parse and store the session ID if a cookie is set in the response header
-      val c = u.getResponseFields.get("Set-Cookie").asInstanceOf[java.util.List[String]]
-      if (c != null && c.size > 0) {
-        val s = c.get(0)
-        val jsession = s.substring(s.indexOf("="),s.indexOf(";"))
-        sessionId = ";jsessionid"+jsession
+
+      // Manually parse and store the session ID if a cookie is set in the response header
+      u.getCookie match {
+        case Some(s) => {
+          val jsession = s.substring(s.indexOf("="),s.indexOf(";"))
+          sessionId = ";jsessionid"+jsession
+        }
+        case None =>
       }
 
       val xmlElem = scala.xml.XML.loadString(u.getResponse)
@@ -83,9 +98,7 @@ class Client {
         case "GAMESTART" =>
           val seed = (xmlElem \ "@seed").text.toLong
           println("Game start! Seed=" + seed)
-          battle = new BattleLocal(seed)
-          started = true
-          TimerActor.start
+          view.gameStart(seed)
           self.exit
         case _ => println("Error"); self.exit
       }
@@ -106,7 +119,7 @@ class Client {
 trait BattleController {
 
   /** The list of active Tetrion that comprise this Battle instance. */
-  var players: List[Tetrion]
+  val players: List[Tetrion]
 
   /** The current frame number the overall Battle has advanced to.
    * Note that in networked multiplayer Battles this time may only be synchronized to
@@ -125,18 +138,16 @@ trait BattleController {
  * controlled by a playback session.
  * Both player and opopnent Tetrion are initialized with the same Randomizer seed.
  */
-class BattleLocal(seed: Long) extends BattleController {
+class BattleLocal(val input: Controller) extends BattleController {
   val latency = 1000
-
   // Hook the player Tetrion to the local PulpCore keyboard input.
-  var input = new PulpControl(Player.Player1, seed)
-  var player : Tetrion = new Tetrion(input,this)
+  val player : Tetrion = new Tetrion(input,this)
 
   // Hook the opponent Tetrion to the playback controller receiving updates from the Client.
-  var playback = new PlaybackController(seed,this)
-  var opponent = new Tetrion(playback,this)
+  val playback = new PlaybackController(input.seed,this)
+  val opponent = new Tetrion(playback,this)
 
-  var players = List(player, opponent)
+  val players = List(player, opponent)
 
   override def update = {
     time += 1
@@ -144,14 +155,6 @@ class BattleLocal(seed: Long) extends BattleController {
     if(time > latency*2) {
       opponent.update
     }
-  }
-
-  def restart = {
-    input = new PulpControl(Player.Player1)
-    player = new Tetrion(input,this)
-
-    playback = new PlaybackController(input.seed,this)
-    opponent = new Tetrion(playback,this)
   }
 
   /** Passes BattleEffect messages from opponent to the local player. */

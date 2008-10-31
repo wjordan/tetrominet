@@ -15,6 +15,7 @@
     <packaging>war</packaging>
     <name>ScalaTetris-Server</name>
     <inceptionYear>2008</inceptionYear>
+
     <properties>
         <scala.version>2.7.1</scala.version>
     </properties>
@@ -112,8 +113,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-
             <plugin>
                 <groupId>org.scala-tools</groupId>
                 <artifactId>maven-scala-plugin</artifactId>
@@ -177,14 +176,6 @@
                 <configuration>
                     <downloadSources>true</downloadSources>
                     <downloadJavadocs>true</downloadJavadocs>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.myfaces.maven</groupId>
-                <artifactId>wagon-maven-plugin</artifactId>
-                <configuration>
-                    <id>upload-war</id>
-                    <url>scpexe://tetromi.net/home/will/</url>
                 </configuration>
             </plugin>
         </plugins>

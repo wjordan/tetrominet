@@ -4,7 +4,6 @@ package ScalaTetris
 import mode.{PlayMode, TADeath, EasyMode}
 import model.TetrionState
 import net.{BattleEffect, BattleController, AddLinesEffect}
-import pulp.PulpControl
 import scala.actors.Actor
 import scala.actors.Actor._
 import scala.collection.mutable
@@ -313,9 +312,10 @@ class TetrionCell (p: Pos, t: TetrionBase) extends Cell {
 
   def remove:Unit = {
     if(block != emptyBlock) {
-      t.blockMap - block
-      notifyView(_.blockRemove(block))
+      val b = block
+      t.blockMap - b
       block = emptyBlock
+      notifyView(_.blockRemove(b))
     }
   }
 

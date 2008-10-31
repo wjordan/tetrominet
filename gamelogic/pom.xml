@@ -6,14 +6,8 @@
     <artifactId>gamelogic</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <parent>
-        <groupId>pulpcore</groupId>
-        <artifactId>template</artifactId>
-        <version>0.11.3-SNAPSHOT</version>
-    </parent>
-
     <name>Game Logic</name>
-    <description>Contains the game logic and PulpCore applet.</description>
+    <description>Contains the core game logic.</description>
     <developers>
         <developer>
             <name>Will Jordan</name>
@@ -22,11 +16,6 @@
         </developer>
     </developers>
     <properties>
-        <project.scene>HelloWorld.HelloWorld</project.scene>
-        <project.width>640</project.width>
-        <project.height>600</project.height>
-        <project.params></project.params>
-        <project.codebase></project.codebase>
         <scala.version>2.7.1</scala.version>
     </properties>
     <repositories>
@@ -66,44 +55,6 @@
         </dependency>
     </dependencies>
 
-    <profiles>
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <tasks>
-                                        <copy todir="../gameserver/src/main/webapp" preservelastmodified="true">
-                                            <fileset dir="${project.build.directory}">
-                                                <include name="${project.build.finalName}-RELEASE.jar*"/>
-                                            </fileset>
-                                            <globmapper from="${project.build.finalName}-RELEASE.jar*" to="${project.build.finalName}.jar*"/>
-                                        </copy>
-                                        <copy todir="../gameserver/src/main/webapp" preservelastmodified="true">
-                                            <fileset dir="${project.build.directory}">
-                                                <include name="${project.build.finalName}.zip"/>
-                                                <include name="index.html"/>
-                                                <include name="pulpcore.js"/>
-                                                <include name="splash.gif"/>
-                                            </fileset>
-                                        </copy>
-                                    </tasks>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
     <build>
         <plugins>
             <plugin>
@@ -120,18 +71,6 @@
                 <configuration>
                     <scalaVersion>${scala.version}</scalaVersion>
                 </configuration>
-            </plugin>
-            <!-- Run Java compiler after Scala compiler -->
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                            <goal>testCompile</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
@@ -151,14 +90,6 @@
                 <buildcommands>
                   <java.lang.String>ch.epfl.lamp.sdt.core.scalabuilder</java.lang.String>
                 </buildcommands>
-              </configuration>
-            </plugin>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-idea-plugin</artifactId>
-              <configuration>
-                <downloadSources>true</downloadSources>
-                <downloadJavadocs>true</downloadJavadocs>
               </configuration>
             </plugin>
         </plugins>
