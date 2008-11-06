@@ -1,25 +1,33 @@
 import charva.awt._
 import charva.awt.event._
 import charvax.swing.JFrame
+
+import charvax.swing.JLabel
 import charvax.swing.JPanel
 
+
+import charvax.swing.JTextArea
 import scala.actors.Actor
 import scala.actors.Actor._
 
 import scala.collection.mutable.Map
 import ScalaTetris._
 import ScalaTetris.local.SinglePlayerGame
+import mode.Playmode
+
+import ScalaTetris.net.BattleController
+import ScalaTetris.net.Client
+import ScalaTetris.net.ClientView
+import ScalaTetris.net.BattleLocal
 
 /**
- * Text-mode view implementation using Charva Curses bindings (requires JNI library).
+ * Text-mode view implementation using Charva Curses bindings (requires link to JNI library).
  * @author will
  * @date Oct 26, 2008 7:55:10 PM
  */
 
 class TextView extends Container with TetrionView {
   var tetrion : TetrionModel = null
-  val controller = new TextControl
-
   def updateState = {}
 
   val cellViewMap:Map[Cell,TextCellView] = Map.empty[Cell,TextCellView]
@@ -38,14 +46,14 @@ class TextView extends Container with TetrionView {
   /** Triggered when the model creates a new piece. */
   def pieceCreate(piece : Piece) = {
     for((block,pos) <- piece.blockSet) {
-      val cell = tetrion.model(pos._1.toInt+3)(pos._2.toInt)
+      val cell = tetrion.model(pos._1.toInt+3)(pos._2.toInt-1)
       val view:TextCellView = getView(cell)
       view.blockRemove(block)
     }
 
     val nextPiece = tetrion.pieceQueue.apply(0)
     for((block,pos) <- nextPiece.blockSet) {
-      val nextCell = tetrion.model(pos._1.toInt+3)(pos._2.toInt)
+      val nextCell = tetrion.model(pos._1.toInt+3)(pos._2.toInt-1)
       val view = getView(nextCell)
       view.blockPut(block)
     }
@@ -59,6 +67,7 @@ class TextView extends Container with TetrionView {
 
   def notifyCellCreate(cell : Cell) = {
     val view = new TextCellView(cell)
+    view.setLocation((cell.pos.x*2+1).toInt, cell.pos.y.toInt)
     cellViewMap(cell) = view
     add(view)
   }
@@ -75,20 +84,10 @@ class TextView extends Container with TetrionView {
   }
 
 
-  override def getSize = new Dimension(20, 20)
-
-  override def getWidth = 20
-
-  override def getHeight = 20
-
-  override def minimumSize = new Dimension(22, 25)
+  override def minimumSize = new Dimension(22, 24)
 
   override def debug(i:Int) = {}
 
-
-  override def processKeyEvent(p1: KeyEvent): Unit = {
-    controller.keyPressed(p1)
-  }
 }
 
 /** Spatializes a cell by managing its enclosed Block Sprite. */
@@ -103,8 +102,7 @@ class TextCellView(c : Cell) extends Component with CellView {
   blockPut(c.block)
 
   def draw = {
-    val point: Point = new Point((pos.x*2).toInt+2,pos.y.toInt+2)
-    Toolkit.getDefaultToolkit().setCursor(point);
+    Toolkit.getDefaultToolkit().setCursor(getLocationOnScreen());
     TextBlockView.draw(block)
   }
 
@@ -120,8 +118,7 @@ class TextCellView(c : Cell) extends Component with CellView {
 
   /** A new Block is put into this Cell. */
   def blockPut(b: Block) = {
-
-    block = b; draw
+    block = b; repaint
   }
 
   def blockRemove(b: Block) = { block = c.emptyBlock; draw }
@@ -139,15 +136,14 @@ object TextBlockView {
   def draw(b: Block) = {
     val color = blockColor(b)
     val colorPair = tk.getColorPairIndex(new ColorPair(
-      if(b.isActive)color else black,
-      if (b.blockType != Empty) color else black))
+      if(b.isActive)color else black, // foreground
+      if (b.blockType != Empty) color else black)) // background
     val attrib = if (b.isActive) Toolkit.A_BOLD else Toolkit.A_DIM
     val string = {
       if(b.isActive) "▓▓"
       else if(b.blockType != Empty) "  "
       else "░░"
     }
-
     tk.addString(string, attrib, colorPair);
     tk.setCursor(0,0)
   }
@@ -168,39 +164,71 @@ object TextBlockView {
 }
 
 object TextViewApp extends JFrame {
+
+  var game: BattleController = null
+  var controller: TextControl = new TextControl
+  val player1: TextView = new TextView
+  val player2: TextView = new TextView
   _insets = new Insets(1, 1, 1, 1);
-  this.setTitle("TetromiNET")
+  setTitle("TetromiNET")
 
   this.addKeyListener(new KeyAdapter(){
     override def keyPressed(ev: KeyEvent) = {
       if(ev.getKeyCode == 'q') System.exit(0)
+      controller.keyPressed(ev)
+    }
+  })
+
+  val client:Client  = new Client(new ClientView{
+    def gameOver(iWin:Boolean): Unit = { println("Game over! You "+
+            (if(iWin)"WIN!" else "LOSE!") )}
+    def gameStart(seed: Long): Unit = {
+      label.setText("")
+      controller = new TextControl(seed)
+      val mGame = new BattleLocal(controller)
+      game = mGame
+      player1.addTetrion(mGame.players(0))
+      contentPane.add(player2)
+      player2.setLocation(30,2)
+      player2.addTetrion(mGame.players(1))
+      TimerActor.start
+      client.startGame(mGame)
     }
   })
 
   System.setProperty("charva.color", "")
-  val tk: Toolkit = Toolkit.getDefaultToolkit();
-  val view = new TextView
-  val control: Controller = view.controller
-  val tetrion = new Tetrion(control, new SinglePlayerGame(control))
+  Toolkit.getDefaultToolkit.startColors
+
+  def startSingleGame = {
+    game = new SinglePlayerGame(controller,Playmode.Easy)
+    val tetrion = game.players(0)
+    val view = new TextView
+    view.validate
+    view.addTetrion(tetrion)
+    contentPane.add(view);
+    TimerActor.start
+  }
 
   val contentPane = this.getContentPane
   contentPane.setLayout(new BorderLayout);
 
-  contentPane.add(view);
-  tk.startColors
-  view.addTetrion(tetrion)
-  tetrion.update
-
+  val label = new JTextArea()
+  label.setEditable(false)
+  contentPane.add(label)
+  contentPane.add(player1)
   this.pack
   this.setVisible(true)
+  label.validate
+  label.setLocation(30,2)
+  label.setText("Waiting for opponent...\n" +
+          "WASD keys to move, [] keys to rotate\n" +
+          "Or arrow keys to move, ZX keys to rotate")
 
   /** Schedules controller updates to fire at fixed intervals. */
   val TimerActor = new Actor { def act() = loop{
-    tetrion.update
+    game.update
     Thread.sleep(20)
   }}
-
-  TimerActor.start
 
   /** Application entry point. */
   def main(args: Array[String]) {

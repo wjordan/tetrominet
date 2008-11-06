@@ -5,6 +5,14 @@ package ScalaTetris.mode
  * @date Oct 24, 2008 7:15:39 PM
  */
 
+object Playmode extends Enumeration("Easy","Death") { val Easy, Death = Value
+  def apply(p: Playmode.Value, tetrion: Tetrion): PlayMode = p match {
+    case Easy => new EasyMode(tetrion)
+    case Death => new TADeath(tetrion)
+  }
+}
+
+
 abstract class PlayMode {
   /** Gravity expressed in number of rows descended per frame (TGM works in fractions of 256 so we'll follow that convention) */
   var gravity: Double
@@ -64,8 +72,8 @@ class EasyMode(tetrion: Tetrion) extends PlayMode with TgmLevelAdvance {
 
   override def lineClear(numLines:Int) = {
     super.lineClear(numLines)
-    println("grav="+gravity)
-    if(level == 300) println("Congratulations!")
+//    println("grav="+gravity)
+    if(level == 300) println("Congratulations! You win!")
   }
 }
 

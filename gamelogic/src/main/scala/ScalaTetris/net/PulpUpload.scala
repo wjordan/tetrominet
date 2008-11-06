@@ -1,15 +1,10 @@
-package ScalaTetris.pulp
-
+package ScalaTetris.net
 
 import java.net.URL
-
-
 import java.util.{HashMap, Map}
-import net.AbstractUpload
-import pulpcore.net.Upload
 
 /**
- * Simple abstract net wrapper for PulpCore's Upload object.
+ * Simple abstract net wrapper for PulpCore's URLConnection-based Upload object.
  * @author will
  * @date Oct 31, 2008 7:51:12 AM
  */

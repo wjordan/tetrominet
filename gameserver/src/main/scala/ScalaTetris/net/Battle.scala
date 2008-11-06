@@ -3,6 +3,7 @@ package ScalaTetris.net
 import _root_.scala.actors.Actor
 import _root_.scala.actors.Actor._
 import _root_.scala.xml.Elem
+import mode.Playmode
 
 /**
  * Manages state of a multiplayer battle.
@@ -13,13 +14,13 @@ import _root_.scala.xml.Elem
 case class AddStates(actor: GameActor, xml: Elem)
 case class GetOpponentStates(actor: GameActor)
 
-class Battle(val playerActor: GameActor, val opponentActor: GameActor) extends BattleController with Actor {
+class Battle(val playerActor: GameActor, val opponentActor: GameActor, mode:Playmode.Value) extends BattleController with Actor {
   val seed = System.currentTimeMillis
 
   val playerController = new PlaybackController(seed,this)
   val opponentController = new PlaybackController(seed,this)
-  var player = new Tetrion(playerController,this)
-  var opponent = new Tetrion(opponentController,this)
+  var player = new Tetrion(playerController,this,mode)
+  var opponent = new Tetrion(opponentController,this,mode)
 
   println("New Battle begun! player="+player+", opponent="+opponent)
   def act = loop { react {

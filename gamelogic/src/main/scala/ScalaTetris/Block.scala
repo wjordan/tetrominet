@@ -1,7 +1,7 @@
 package ScalaTetris
 
 
-import mode.{PlayMode, TADeath, EasyMode}
+import mode.{PlayMode, TADeath, EasyMode, Playmode}
 import model.TetrionState
 import net.{BattleEffect, BattleController, AddLinesEffect}
 import scala.actors.Actor
@@ -170,11 +170,11 @@ abstract class TetrionBase (seed:Long) extends TetrionModel {
  * @param Control the Controller providing input state.
  * @param battleController the BattleController to communicate any multiplayer BattleEffects to/from.
  */
-class Tetrion(val Control: Controller, val battleController: BattleController) extends TetrionBase(Control.seed)
+class Tetrion(val Control: Controller, val battleController: BattleController, mode:Playmode.Value) extends TetrionBase(Control.seed)
         with TetrionState {
   override def toString = frame.toString /*(if (this == battleController.player) "PlayerTetrion" else "OpponentTetrion") + ":#"+*/
 
-  val playmode: PlayMode = new TADeath(this)
+  val playmode: PlayMode = Playmode(mode,this)
   
   val battleQueue = new SynchronizedQueue[BattleEffect];
   val messageQueue = new SynchronizedQueue[Any];

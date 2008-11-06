@@ -4,6 +4,7 @@ import _root_.scala.actors._
 import _root_.scala.actors.Actor._
 import _root_.scala.collection.mutable.{Set, HashMap}
 import bootstrap.liftweb.StartMessage
+import mode.Playmode
 
 /**
  * @author will
@@ -31,7 +32,7 @@ class GameActor extends Actor {
         if (waiting.size > 0) {
           println("Someone else is waiting too!")
           // Create the new game object with one other player TODO: Generalize to X players
-          val battle: Battle = new Battle(this, waiting.toList(0))
+          val battle: Battle = new Battle(this, waiting.toList(0),Playmode.Easy)
           GameList.gameList += (currentGame -> battle)
           game = battle
           // Send a StartMessage to the other waiting GameActor(s)

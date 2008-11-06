@@ -10,6 +10,7 @@ import pulpcore.image.Colors._
 import pulpcore.scene.Scene2D
 import pulpcore.sprite._
 import ScalaTetris._
+import mode.Playmode
 
 import ScalaTetris.local.SinglePlayerGame
 import ScalaTetris.net
@@ -22,10 +23,11 @@ import scala.io.Source
 import scala.xml._
 
 class HelloWorld extends Scene2D {
-  var client: Client = null
   lazy val normalButton = Button.createLabeledButton("Normal", 50, 200)
   lazy val deathButton = Button.createLabeledButton("Death", 150, 200)
   lazy val player1 = new PulpControl(Player.Player1)
+  var client: Client = null
+
   override def load = {
     Stage.setFrameRate(20);
     add(new FilledSprite(WHITE))
@@ -37,25 +39,24 @@ class HelloWorld extends Scene2D {
 
     client = new Client(new ClientView{
       def gameOver(iWin:Boolean): Unit = Stage.setScene(new GameOverScene(iWin))
-
       def gameStart(seed: Long): Unit = {
         println("Loading tetris scene!")
-        Stage.setScene(new TetrisScene(new BattleLocal(new PulpControl(Player.Player1,seed))))
+        Stage.setScene(new TetrisScene(new BattleLocal(new PulpControl(Player.Player1,seed)),HelloWorld.this.client))
       }
-
-      def upload(url:URL) = { new PulpUpload(url)}
     })
+    
   }
 
   override def update(elapsedTime:Int) = {
+    super.update(elapsedTime)
     if(Input.isPressed(Input.KEY_R)) {
       Stage.replaceScene(new HelloWorld)
     }
     if(normalButton.isClicked) {
-      Stage.replaceScene(new SoloTetrisScene(new SinglePlayerGame(player1)))
+      Stage.replaceScene(new SoloTetrisScene(new SinglePlayerGame(player1,Playmode.Easy)))
     }
     if(deathButton.isClicked) {
-      Stage.replaceScene(new SoloTetrisScene(new SinglePlayerGame(player1)))
+      Stage.replaceScene(new SoloTetrisScene(new SinglePlayerGame(player1,Playmode.Death)))
     }
   }
 
@@ -74,6 +75,7 @@ class SoloTetrisScene(battle: BattleController) extends Scene2D {
   var paused = false
 
   override def update(elapsedTime:Int) = {
+    super.update(elapsedTime)
     if(Input.isPressed(Input.KEY_P)) paused = !paused
     if(Input.isPressed(Input.KEY_R)) {
       Stage.replaceScene(new HelloWorld)
@@ -82,7 +84,7 @@ class SoloTetrisScene(battle: BattleController) extends Scene2D {
   }
 }
 
-class TetrisScene(battle: BattleLocal) extends Scene2D {
+class TetrisScene(battle: BattleLocal, client: Client) extends Scene2D {
   var pulpview1: PulpTetrionView = null
   var pulpview2: PulpTetrionView = null
 
@@ -98,16 +100,17 @@ class TetrisScene(battle: BattleLocal) extends Scene2D {
     pulpview2.setLocation(300,20)
     add(pulpview2)
 
+    client.startGame(battle)
   }
 
   var paused = false
 
   override def update(elapsedTime:Int) = {
+    super.update(elapsedTime)
     if(Input.isPressed(Input.KEY_P)) paused = !paused
     if(Input.isPressed(Input.KEY_R)) {
       Stage.replaceScene(new HelloWorld)
     }
-
     battle.update
   }
 

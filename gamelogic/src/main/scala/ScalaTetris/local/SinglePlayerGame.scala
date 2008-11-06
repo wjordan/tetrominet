@@ -1,5 +1,7 @@
 package ScalaTetris.local
 
+
+import mode.Playmode
 import net.BattleController
 
 /**
@@ -9,10 +11,10 @@ import net.BattleController
  * @date Oct 22, 2008 11:49:46 PM
  */
 
-class SinglePlayerGame(input: Controller) extends BattleController {
+class SinglePlayerGame(input: Controller,mode:Playmode.Value) extends BattleController {
 
   // Hook the player Tetrion to the local PulpCore keyboard input.
-  val player: Tetrion = new Tetrion(input,this)
+  val player: Tetrion = new Tetrion(input,this,mode)
 
   val players: List[Tetrion] = List(player)
 

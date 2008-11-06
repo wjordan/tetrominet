@@ -93,7 +93,7 @@ trait Controller {
   def effects(from: Int): Seq[(BattleEffect,Int)] = synchronized { effects.dropWhile(_._2 < from) }
 
   def += (effect: BattleEffect) = synchronized {
-    println("Adding effect "+effect+" to history#" + (length))
+//    println("Adding effect "+effect+" to history#" + (length))
     effects += (effect,length)
   }
 
@@ -125,7 +125,7 @@ object XmlParse {
 
   def addStates(c: PlaybackController, elem: Elem) = elem match {
     case <Controller>{states @ _*}</Controller> => {
-  println("Controller:adding states")
+//  println("Controller:adding states")
       c ++= statesFromXML(states)
       battleFromXML(states).map(c addBattle _)
     }
@@ -169,7 +169,7 @@ class PlaybackController(val seed: Long, battleController: BattleController) ext
   def sendBattleEffects = synchronized {
     // Note: These are skewed by 1 so we have to adjust manually
     for(battle <- battleHist if battle._2 == currentFrame+1) {
-      println("PC: battle effect "+battle._1 +" before frame#"+(currentFrame+1)+"!")
+//      println("PC: battle effect "+battle._1 +" before frame#"+(currentFrame+1)+"!")
       battleController ! PlayBattleMessage(battle,this)
     }
   }
@@ -197,14 +197,14 @@ class PlaybackController(val seed: Long, battleController: BattleController) ext
   /** Needs to be synchronized otherwise insertions may happen out of order */
   def ++= (iter : Iterable[StateSeq]): Unit = synchronized {
     val flatmap = iter.flatMap(_.toSeq)
-    println("PC:Adding "+flatmap.toList.length+" states to "+this)
+//    println("PC:Adding "+flatmap.toList.length+" states to "+this)
     hist ++= flatmap
   }
   
   def addBattle (battle: (BattleEffect, Int)): Unit = synchronized {
-    println("PC: Adding battle effect "+battle._1+" for frame#"+battle._2+", currentFrame="+currentFrame+"!")
+//    println("PC: Adding battle effect "+battle._1+" for frame#"+battle._2+", currentFrame="+currentFrame+"!")
     if(battle._2 == currentFrame+1) {
-      println("PC: Sending battleeffect NOW!")
+//      println("PC: Sending battleeffect NOW!")
       battleController ! PlayBattleMessage(battle,this)
     }
     battleHist += battle

@@ -1,6 +1,10 @@
 package ScalaTetris.net
 
 
+import mode.PlayMode
+import mode.Playmode
+
+
 import scala.collection.{mutable, Map}
 import java.io.{ByteArrayInputStream, IOException}
 import java.util.Collections.UnmodifiableRandomAccessList
@@ -12,7 +16,6 @@ import java.net._;
 
 
 case class SendController(control: Controller)
-
 case class SendBattleEffect(effect: BattleEffect, control: Controller)
 
 /** Abstract data upload interface. */
@@ -26,7 +29,12 @@ abstract class AbstractUpload(url: URL) {
 trait ClientView {
   def gameOver(iWin:Boolean): Unit
   def gameStart(seed: Long): Unit
-  def upload(url:URL): AbstractUpload
+  def upload(url:URL) = new PulpUpload(url)
+}
+
+object Client {
+  val server2 = "tetromi.net"
+  val server = "localhost:8080"
 }
 
 /**
@@ -50,14 +58,14 @@ class Client(view: ClientView) {
     case SendController(control) =>
       if(control.length - control.lastFrameDump > 0) {
         // Send the player's recorded controller to the server
-        println("Sending state")
-        val u: AbstractUpload = view.upload(new URL("/api/addStates" + sessionId))
+//        println("Sending state")
+        val u: AbstractUpload = view.upload(new URL("http://"+Client.server+"/api/addStates" + sessionId))
         u.addField("seed", control.seed.toString)
         u.addField("xml", (control.toXmlIter).toString)
         u.sendNow
         // Add the received controller inputs to the opponent's playback controller
         val xmlElem = scala.xml.XML.loadString(u.getResponse)
-        println("Received response, xml = "+xmlElem)
+//        println("Received response, xml = "+xmlElem)
         xmlElem.label match {
           case "Controller" => XmlParse.addStates(battle.playback,xmlElem)
           case "Gameover" =>
@@ -75,9 +83,8 @@ class Client(view: ClientView) {
 
   /** Perform long polling on the server until a game connection is established. */
   val WaitForStartActor = actor { loop{
-    println("Waiting for other player(s)...")
-    val url = new URL("/api/waitForStart" + sessionId)
-    println("url="+url)
+//    println("Waiting for other player(s)...")
+    val url = new URL("http://"+Client.server+"/api/waitForStart" + sessionId)
     val u: AbstractUpload = view.upload(url)
     try {
       u.sendNow
@@ -94,10 +101,10 @@ class Client(view: ClientView) {
       val xmlElem = scala.xml.XML.loadString(u.getResponse)
       xmlElem.label match {
         case "TIMEOUT" =>
-          println("Time out, continue wait cycle...")
+//          println("Time out, continue wait cycle...")
         case "GAMESTART" =>
           val seed = (xmlElem \ "@seed").text.toLong
-          println("Game start! Seed=" + seed)
+//          println("Game start! Seed=" + seed)
           view.gameStart(seed)
           self.exit
         case _ => println("Error"); self.exit
@@ -139,33 +146,26 @@ trait BattleController {
  * Both player and opopnent Tetrion are initialized with the same Randomizer seed.
  */
 class BattleLocal(val input: Controller) extends BattleController {
-  val latency = 1000
+  val latency = 10
+  val playMode: Playmode.Value = Playmode.Easy
   // Hook the player Tetrion to the local PulpCore keyboard input.
-  val player : Tetrion = new Tetrion(input,this)
+  val player : Tetrion = new Tetrion(input,this,playMode)
 
   // Hook the opponent Tetrion to the playback controller receiving updates from the Client.
   val playback = new PlaybackController(input.seed,this)
-  val opponent = new Tetrion(playback,this)
+  val opponent = new Tetrion(playback,this,playMode)
 
   val players = List(player, opponent)
-
-  override def update = {
-    time += 1
-    player.update
-    if(time > latency*2) {
-      opponent.update
-    }
-  }
 
   /** Passes BattleEffect messages from opponent to the local player. */
   def !(msg: Any) = msg match {
     // INFO: Using Actors for processing battle effects only and not for the main game loop for performance.
       case BattleMessage(effect: BattleEffect, tetrion: Tetrion) =>
-        println("effect " + effect + " sent by " + tetrion + "!")
+//        println("effect " + effect + " sent by " + tetrion + "!")
         if (tetrion == opponent) player ! BattleMessage(effect, tetrion)
-        else println("ignoring effect trigger sent from player to opponent")
+//        else println("ignoring effect trigger sent from player to opponent")
       case PlayBattleMessage(effect: (BattleEffect, Int), play: Controller) =>
-        println("effect " + effect + " sent by playback controller to "+opponent)
+//        println("effect " + effect + " sent by playback controller to "+opponent)
         opponent ! PlayBattleMessage(effect, play)
       case x => println("Unknown message: "+x)
   }
