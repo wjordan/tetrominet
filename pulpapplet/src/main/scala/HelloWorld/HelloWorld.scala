@@ -1,3 +1,13 @@
+/*
+ * TetromiNET Copyright (C) 2008-2009 Will Jordan.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * See <http://www.gnu.org/licenses/> for details.
+ */
+
 package HelloWorld
 
 
@@ -9,14 +19,14 @@ import pulpcore.animation.Easing._
 import pulpcore.image.Colors._
 import pulpcore.scene.Scene2D
 import pulpcore.sprite._
-import ScalaTetris._
+import Tetromi._
 import mode.Playmode
 
-import ScalaTetris.local.SinglePlayerGame
-import ScalaTetris.net
-import ScalaTetris.net._
+import Tetromi.local.SinglePlayerGame
+import Tetromi.net
+import Tetromi.net._
 
-import ScalaTetris.pulp._
+import Tetromi.pulp._
 import pulpcore.Input
 import pulpcore.Stage
 import scala.io.Source
@@ -40,11 +50,11 @@ class HelloWorld extends Scene2D {
     client = new Client(new ClientView{
       def gameOver(iWin:Boolean): Unit = Stage.setScene(new GameOverScene(iWin))
       def gameStart(seed: Long): Unit = {
-        println("Loading tetris scene!")
-        Stage.setScene(new TetrisScene(new BattleLocal(new PulpControl(Player.Player1,seed)),HelloWorld.this.client))
+        println("Loading tetromi scene!")
+        Stage.setScene(new TetromiScene(new BattleLocal(new PulpControl(Player.Player1,seed)),HelloWorld.this.client))
       }
     })
-    
+
   }
 
   override def update(elapsedTime:Int) = {
@@ -53,16 +63,16 @@ class HelloWorld extends Scene2D {
       Stage.replaceScene(new HelloWorld)
     }
     if(normalButton.isClicked) {
-      Stage.replaceScene(new SoloTetrisScene(new SinglePlayerGame(player1,Playmode.Easy)))
+      Stage.replaceScene(new SoloTetromiScene(new SinglePlayerGame(player1,Playmode.Easy)))
     }
     if(deathButton.isClicked) {
-      Stage.replaceScene(new SoloTetrisScene(new SinglePlayerGame(player1,Playmode.Death)))
+      Stage.replaceScene(new SoloTetromiScene(new SinglePlayerGame(player1,Playmode.Death)))
     }
   }
 
 }
 
-class SoloTetrisScene(battle: BattleController) extends Scene2D {
+class SoloTetromiScene(battle: BattleController) extends Scene2D {
   var pulpview1: PulpTetrionView = null
 
   override def load = {
@@ -84,7 +94,7 @@ class SoloTetrisScene(battle: BattleController) extends Scene2D {
   }
 }
 
-class TetrisScene(battle: BattleLocal, client: Client) extends Scene2D {
+class TetromiScene(battle: BattleLocal, client: Client) extends Scene2D {
   var pulpview1: PulpTetrionView = null
   var pulpview2: PulpTetrionView = null
 
@@ -120,12 +130,12 @@ class GameOverScene(won: Boolean) extends Scene2D {
   val gameoverlabel: Label = new Label(if(won)"You win!" else "You lose!",50,100)
 
   override def load = {
-    
+
     add(new FilledSprite(20,50,300,200,WHITE))
     add(gameoverlabel)
     add(new Label("Press R to play again!",50,200))
   }
-  
+
   override def update(elapsedTime:Int) = {
     if(Input.isPressed(Input.KEY_R)) {
       Stage.replaceScene(new HelloWorld)

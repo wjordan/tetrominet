@@ -1,3 +1,13 @@
+/*
+ * TetromiNET Copyright (C) 2008-2009 Will Jordan.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * See <http://www.gnu.org/licenses/> for details.
+ */
+
 import charva.awt._
 import charva.awt.event._
 import charvax.swing.JFrame
@@ -11,14 +21,14 @@ import scala.actors.Actor
 import scala.actors.Actor._
 
 import scala.collection.mutable.Map
-import ScalaTetris._
-import ScalaTetris.local.SinglePlayerGame
+import Tetromi._
+import Tetromi.local.SinglePlayerGame
 import mode.Playmode
 
-import ScalaTetris.net.BattleController
-import ScalaTetris.net.Client
-import ScalaTetris.net.ClientView
-import ScalaTetris.net.BattleLocal
+import Tetromi.net.BattleController
+import Tetromi.net.Client
+import Tetromi.net.ClientView
+import Tetromi.net.BattleLocal
 
 /**
  * Text-mode view implementation using Charva Curses bindings (requires link to JNI library).
@@ -71,7 +81,7 @@ class TextView extends Container with TetrionView {
     cellViewMap(cell) = view
     add(view)
   }
-  
+
   def addTetrion(t:TetrionModel) = {
     tetrion = t
     for(row <- tetrion.model; cell <- row)

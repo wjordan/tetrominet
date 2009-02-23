@@ -1,15 +1,25 @@
+/*
+ * TetromiNET Copyright (C) 2008-2009 Will Jordan.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * See <http://www.gnu.org/licenses/> for details.
+ */
+
 import charva.awt.event.KeyEvent
-import ScalaTetris.Controller
-import ScalaTetris.State
+import Tetromi.Controller
+import Tetromi.State
 import charva.awt.event.KeyEvent._
 import scala.collection.mutable
 
-import ScalaTetris._
-import ScalaTetris.Rotation._
-import ScalaTetris.Movement._
-import ScalaTetris.Direction._
-import ScalaTetris.Option._
-import ScalaTetris.Drop._
+import Tetromi._
+import Tetromi.Rotation._
+import Tetromi.Movement._
+import Tetromi.Direction._
+import Tetromi.Option._
+import Tetromi.Drop._
 
 /**
  * @author will

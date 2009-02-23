@@ -1,3 +1,13 @@
+/*
+ * TetromiNET Copyright (C) 2008-2009 Will Jordan.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * See <http://www.gnu.org/licenses/> for details.
+ */
+
 package bootstrap.liftweb
 
 import _root_.javax.servlet.http.{HttpServletRequest, Cookie}
@@ -12,7 +22,7 @@ import net.liftweb.sitemap._
 import net.liftweb.sitemap.Loc._
 import Helpers._
 import net.liftweb.http
-import ScalaTetris.net._
+import Tetromi.net._
 
 /**
  * A class that's instantiated early and run.  It allows the application

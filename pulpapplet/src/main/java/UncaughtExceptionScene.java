@@ -1,3 +1,13 @@
+/*
+ * TetromiNET Copyright (C) 2008-2009 Will Jordan.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * See <http://www.gnu.org/licenses/> for details.
+ */
+
 import pulpcore.Build;
 import pulpcore.CoreSystem;
 import pulpcore.image.Colors;
@@ -12,41 +22,41 @@ import pulpcore.sprite.Sprite;
 import pulpcore.Stage;
 
 public class UncaughtExceptionScene extends Scene2D {
-    
+
     // Only send once per browser session to avoid talkback spam
     static boolean uploadedThisSession = false;
-    
+
     Button retryButton;
     Button consoleButton;
-    
+
     @Override
     public void load() {
         add(new FilledSprite(Colors.rgb(0, 0, 170)));
-        
-        // Send the talkback fields via POST 
+
+        // Send the talkback fields via POST
         if (!uploadedThisSession && "true".equals(CoreSystem.getAppProperty("talkback"))) {
             uploadedThisSession = true;
             CoreSystem.uploadTalkBackFields("/talkback.py");
         }
-        
+
         CoreFont font = CoreFont.getSystemFont().tint(Colors.WHITE);
-        Group message = Label.createMultilineLabel(font, "Oops! An error occurred.", 
+        Group message = Label.createMultilineLabel(font, "Oops! An error occurred.",
             Stage.getWidth() / 2, 150, Stage.getWidth() - 20);
         message.setAnchor(Sprite.CENTER);
         add(message);
-        
+
         if (Build.DEBUG) {
             consoleButton = Button.createLabeledButton("Show Console", Stage.getWidth() / 2, 300);
             consoleButton.setAnchor(Sprite.CENTER);
             add(consoleButton);
         }
-        
+
         retryButton = Button.createLabeledButton("Restart", Stage.getWidth() / 2, 350);
         retryButton.setAnchor(Sprite.CENTER);
         add(retryButton);
     }
-    
-    @Override 
+
+    @Override
     public void update(int elapsedTime) {
         if (retryButton.isClicked()) {
             Stage.setScene(new LoadingScene());

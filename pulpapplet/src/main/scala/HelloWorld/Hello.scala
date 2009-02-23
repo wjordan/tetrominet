@@ -1,3 +1,13 @@
+/*
+ * TetromiNET Copyright (C) 2008-2009 Will Jordan.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * See <http://www.gnu.org/licenses/> for details.
+ */
+
 package HelloWorld
 
 import pulpcore.image.CoreFont
@@ -24,7 +34,7 @@ class Hello extends Scene2D {
       label = new Label(font, "Hello There!", 320, 240);
       label.setAnchor(Sprite.CENTER);
       add(label);
-        
+
       val sound: Sound = Sound.load("sound.wav");
       sound.play();
   }

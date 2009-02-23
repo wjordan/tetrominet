@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>ScalaTetris</groupId>
-  <version>1.0-SNAPSHOT</version>
-  <artifactId>ScalaTetris</artifactId>
-  <name>Scala Tetris</name>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>Tetromi</groupId>
+    <version>1.0-SNAPSHOT</version>
+    <artifactId>TetromiNET</artifactId>
+    <name>TetromiNET</name>
     <developers>
         <developer>
             <name>Will Jordan</name>
@@ -14,25 +14,32 @@
             <organization>http://tetromi.net</organization>
         </developer>
     </developers>
-  <packaging>pom</packaging>
-  <modules>
-    <module>gamelogic</module>
-    <module>pulpapplet</module>
-    <module>gameserver</module>
-    <module>textmode</module>
-  </modules>
+    <licenses>
+        <license>
+            <distribution>gello</distribution>
+            <name>GNU General Public License version 3 or later</name>
+            <url>http://www.gnu.org/licenses/</url>
+        </license>
+    </licenses>
+    <packaging>pom</packaging>
+    <modules>
+        <module>gamelogic</module>
+        <module>pulpapplet</module>
+        <module>gameserver</module>
+        <module>textmode</module>
+    </modules>
 
-<build>
-<plugins>
+    <build>
+        <plugins>
             <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-idea-plugin</artifactId>
-              <configuration>
-                <downloadSources>true</downloadSources>
-                <downloadJavadocs>true</downloadJavadocs>
-              </configuration>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-idea-plugin</artifactId>
+                <configuration>
+                    <downloadSources>true</downloadSources>
+                    <downloadJavadocs>true</downloadJavadocs>
+                </configuration>
             </plugin>
-</plugins>
-</build>
+        </plugins>
+    </build>
 
 </project>
