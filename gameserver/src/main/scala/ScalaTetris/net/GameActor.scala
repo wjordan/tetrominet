@@ -88,9 +88,9 @@ object GameList {
   }
 
   import scala.collection.mutable
-  /** Maps game names to a list of GameActors */
+  /** Maps game names to a Set of GameActors */
   val waitList = new HashMap[String, mutable.Set[GameActor]] {
-    // Create an empty Set for new game requests
+    // Create an empty Set for unmapped games
     override def default(key: String) = mutable.Set.empty[GameActor]
   }
   def apply(s: String): Set[GameActor] = waitList(s)

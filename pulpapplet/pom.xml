@@ -12,7 +12,7 @@
         <version>0.11.3-SNAPSHOT</version>
     </parent>
 
-    <name>Game Logic</name>
+    <name>Pulp Applet</name>
     <description>Contains the PulpCore applet bindings.</description>
     <developers>
         <developer>
@@ -27,7 +27,7 @@
         <project.height>600</project.height>
         <project.params></project.params>
         <project.codebase></project.codebase>
-        <scala.version>2.7.1</scala.version>
+        <scala.version>2.7.3</scala.version>
     </properties>
     <repositories>
         <repository>

@@ -33,8 +33,8 @@ trait ClientView {
 }
 
 object Client {
-  val server2 = "tetromi.net"
-  val server = "localhost:8080"
+  val server = "tetromi.net"
+  val server2 = "localhost:8080"
 }
 
 /**

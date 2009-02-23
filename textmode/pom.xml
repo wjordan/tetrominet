@@ -9,7 +9,7 @@
     <name>TetromiNET Textmode</name>
     <description>A text-mode frontend using Charva bindings.</description>
     <properties>
-        <scala.version>2.7.1</scala.version>
+        <scala.version>2.7.3</scala.version>
     </properties>
     <repositories>
         <repository>
