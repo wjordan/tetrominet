@@ -10,7 +10,7 @@
 	<style type="text/css">
 		body {
   		margin-top: 1.0em;
-  		background-color: #a35ab9;
+  		background-color: #222222;
 		  font-family: "helvetica"; 
   		color: #000000;
     }
@@ -54,28 +54,32 @@
 
     <p>TetromiNET is a browser-based, multiplayer, open-source implementation of the popular tetromino puzzle game. Featuring:
 
-* Written in Scala, a highly expressive language that compiles to JVM bytecode and is fully interoperable with existing Java libraries
+<ul>
+<li>Written in Scala, a highly expressive language that compiles to JVM bytecode and is fully interoperable with existing Java libraries</li>
+<li>Model-View-Controller pattern effectively separates the game logic, the server framework, and the front-end Java applet. A fully-functional text-mode interface is also included to demonstrate the model-view separation. (Hopefully a mobile phone port is coming soon!)</li>
+<li>Extremely efficient XML-based client-server protocol, designed to cope with arbitrary latency between players, and completely eliminates any possibility of cheating or hacked clients. Clients capture and send compressed sequences of controller inputs, and the game is replayed exactly on both the opponent's client and the delegating server.</li>
+<li>Uses the Lift web framework to implement the game server, also managing browser session state in order to match games to users. (A more full-featured game lobby is planned for the future!)</li>
 
-* Model-View-Controller pattern effectively separates the game logic, the server framework, and the front-end Java applet. A fully-functional text-mode interface is also included to demonstrate the model-view separation. (Hopefully a mobile phone port is coming soon!)
+<li>Currently deployed on an Amazon EC2 instance at tetromi.net!</li></ul></p>
 
-* Extremely efficient XML-based client-server protocol, designed to cope with arbitrary latency between players, and completely eliminates any possibility of cheating or hacked clients. Clients capture and send compressed sequences of controller inputs, and the game is replayed exactly on both the opponent's client and the delegating server.
-
-* Uses the Lift web framework to implement the game server, also managing browser session state in order to match games to users. (A more full-featured game lobby is planned for the future!)
-
-* Currently deployed on an Amazon EC2 instance at tetromi.net!</p><h2>Dependencies</h2>
-<p>Maven (project dependency management)
-Scala (Programming language compiler and libraries)
-Lift (Scala-based web framework)
-PulpCore (2D Java applet framework)
-Charva (Text-mode API bindings for Java)</p>
+<h2>Dependencies</h2>
+<p><ul>
+<li>Maven (project dependency management)</li>
+<li>Scala (Programming language compiler and libraries)</li>
+<li>Lift (Scala-based web framework)</li>
+<li>PulpCore (2D Java applet framework)</li>
+<li>Charva (Text-mode API bindings for Java)</li></ul></p>
 <h2>Install</h2>
 <p>Compilation is done through the Maven framework. More details to come in the future. For now, just go to http://tetromi.net to try it out!</p>
 <h2>License</h2>
 <p>General Public License version 3 or later.</p>
 <h2>Authors</h2>
-<p>Will Jordan (will.jordan@gmail.com)<br/><br/>      </p>
+<p>Will Jordan (will.jordan@gmail.com)
+<br/>
+<br/>      </p>
 <h2>Contact</h2>
-<p>Will Jordan (will.jordan@gmail.com)<br/>      </p>
+<p>Will Jordan (will.jordan@gmail.com)
+<br/>      </p>
 
 
     <h2>Download</h2>
