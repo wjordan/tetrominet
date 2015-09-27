@@ -49,18 +49,17 @@
       <span class="small">by <a href="http://github.com/wjordan">wjordan</a></small></h1>
 
     <div class="description">
-      Browser-based, multiplayer, open-source implementation of the popular tetromino puzzle game. Currently deployed on an <a href="http://aws.amazon.com/ec2/">Amazon EC2</a> instance at <a href="http://tetromi.net">tetromi.net</a>!
+      Browser-based, multiplayer, open-source implementation of the popular tetromino puzzle game.
     </div>
 
     <p>TetromiNET is a browser-based, multiplayer, open-source implementation of the popular tetromino puzzle game. Features:
 
 <ul>
-<li>Written entirely in Scala, a relatively new, functional/object-oriented programming language that compiles to Java bytecode and is fully interoperable with existing Java libraries.</li>
-<li>Model-View-Controller design pattern effectively separates the game logic, the server framework, and the front-end Java applet modules. A fully-functional text-mode interface is also included to demonstrate the model-view separation. (Hopefully a mobile phone port is coming soon!)</li>
+<li>Written entirely in Scala, a functional/object-oriented programming language that compiles to Java bytecode and is fully interoperable with existing Java libraries.</li>
+<li>Model-View-Controller design pattern effectively separates the game logic, the server framework, and the front-end Java applet modules. A fully-functional text-mode interface is also included to demonstrate the model-view separation.</li>
 <li>Extremely efficient XML-based client-server protocol designed to cope with arbitrary latency between multiple opponents, and server-side game logic completely eliminates any possibility of cheating or hacked clients. Clients capture and send compressed sequences of controller inputs, and the game is replayed exactly on both the opponent's client and the delegating server.</li>
-<li>Uses the Lift web framework contained in a Tomcat instance to implement the HTTP game server, and manages browser session state in order to match games to users. (A more full-featured game lobby is planned for the future!)</li>
-
-<li>Currently deployed on an Amazon EC2 instance at <a href="http://tetromi.net">tetromi.net!</a></li></ul></p>
+<li>Uses the Lift web framework contained in a Tomcat instance to implement the HTTP game server, and manages browser session state in order to match games to users.</li>
+</ul></p>
 
 <h2>Dependencies</h2>
 <p><ul>
@@ -70,7 +69,7 @@
 <li><a href="http://www.interactivepulp.com/pulpcore/">PulpCore</a> (2D Java applet framework)</li>
 <li><a href="http://www.pitman.co.za/projects/charva/index.html">Charva</a> (Text-mode API bindings for Java)</li></ul></p>
 <h2>Install</h2>
-<p>Compilation is done through the Maven framework. More details to come in the future. For now, just go to http://tetromi.net to try it out!</p>
+<p>Compilation is done through the Maven framework.</p>
 <h2>License</h2>
 <p><a href="http://www.gnu.org/licenses/">GNU General Public License</a> Version 3 or later.</p>
 <h2>Authors</h2>
